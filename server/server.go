@@ -23,7 +23,9 @@ type (
 
 func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 	s := &server{
-		app: fiber.New(),
+		app: fiber.New(fiber.Config{
+			CaseSensitive: true,
+		}),
 		cfg: cfg,
 		db:  db,
 	}

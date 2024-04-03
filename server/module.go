@@ -1,6 +1,11 @@
 package server
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/tnp2004/url-shortener/modules/converter/converterHandler"
+	"github.com/tnp2004/url-shortener/modules/converter/converterRepositories"
+	"github.com/tnp2004/url-shortener/modules/converter/converterUsecases"
+)
 
 type (
 	IModuleFactory interface {
@@ -21,7 +26,13 @@ func InitModules(r fiber.Router, s *server) IModuleFactory {
 }
 
 func (m *moduleFactory) ConverterModule() {
-	m.router.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	repository := converterRepositories.NewConverterRepository(m.server.db)
+	usecase := converterUsecases.NewConverterUsecases(repository)
+	handler := converterHandler.NewConverterHandler(usecase)
+
+	router := m.router
+
+	router.Get("/", handler.Greeting)
+
+	router.Post("/convert", handler.Convert)
 }

@@ -8,3 +8,7 @@ type (
 		converterRepository converterRepositories.IConverterRepository
 	}
 )
+
+func NewConverterUsecases(repository converterRepositories.IConverterRepository) IConverterUsecases {
+	return &converterUsecases{converterRepository: repository}
+}
