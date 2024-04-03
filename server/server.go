@@ -28,12 +28,23 @@ func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 		db:  db,
 	}
 
+	router := s.app.Group("/v1")
+
+	modules := InitModules(router, s)
+	modules.ConverterModule()
+
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	go s.gracefulShutdown(pctx, quit)
 
-	s.app.Listen(cfg.App.Url)
+	s.httpListening()
+}
+
+func (s *server) httpListening() {
+	if err := s.app.Listen(s.cfg.App.Url); err != nil {
+		log.Fatal("Error: ", err.Error())
+	}
 }
 
 func (s *server) gracefulShutdown(pctx context.Context, quit <-chan os.Signal) {
