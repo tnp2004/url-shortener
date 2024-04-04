@@ -1,6 +1,7 @@
 package converterHandler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,6 +30,8 @@ func (h *converterHandler) Greeting(c *fiber.Ctx) error {
 }
 
 func (h *converterHandler) Convert(c *fiber.Ctx) error {
+	ctx := context.Background()
+
 	wrapper := request.ContextWrapper(c)
 
 	req := new(converter.ConverterReq)
@@ -37,5 +40,10 @@ func (h *converterHandler) Convert(c *fiber.Ctx) error {
 		return response.Error(c, http.StatusBadRequest, err.Error())
 	}
 
-	return response.Success(c, http.StatusOK, req)
+	res, err := h.converterUsecase.GetShortUrl(ctx, req)
+	if err != nil {
+		return response.Error(c, http.StatusInternalServerError, err.Error())
+	}
+
+	return response.Success(c, http.StatusOK, res)
 }

@@ -17,9 +17,10 @@ type (
 	}
 
 	App struct {
-		Stage string
-		Name  string
-		Url   string
+		Stage   string
+		Name    string
+		Url     string
+		Version string
 	}
 
 	Db struct {
@@ -46,9 +47,10 @@ func LoadConfig(path string) Config {
 
 	return Config{
 		App: App{
-			Stage: os.Getenv("APP_STAGE"),
-			Name:  os.Getenv("APP_NAME"),
-			Url:   os.Getenv("APP_URL"),
+			Stage:   os.Getenv("APP_STAGE"),
+			Name:    os.Getenv("APP_NAME"),
+			Url:     os.Getenv("APP_URL"),
+			Version: os.Getenv("VERSION"),
 		},
 		Db: Db{
 			Url: os.Getenv("DB_URL"),

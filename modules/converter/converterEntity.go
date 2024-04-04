@@ -1,9 +1,16 @@
 package converter
 
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type (
-	ShortUrl struct {
-		shortenedUrl string `bson:"shortend_url"`
-		endpoint     string `bson:"endpoint"`
-		createdAt    string `bson:"created_at"`
+	Url struct {
+		Id        primitive.ObjectID `bson:"_id,omitempty"`
+		ShortId   string             `bson:"short_id"`
+		Endpoint  string             `bson:"endpoint"`
+		CreatedAt time.Time          `bson:"created_at"`
 	}
 )

@@ -27,7 +27,7 @@ func InitModules(r fiber.Router, s *server) IModuleFactory {
 
 func (m *moduleFactory) ConverterModule() {
 	repository := converterRepositories.NewConverterRepository(m.server.db)
-	usecase := converterUsecases.NewConverterUsecases(repository)
+	usecase := converterUsecases.NewConverterUsecases(repository, &m.server.cfg.App)
 	handler := converterHandler.NewConverterHandler(usecase)
 
 	router := m.router
