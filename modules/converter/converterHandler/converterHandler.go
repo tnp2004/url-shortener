@@ -15,6 +15,7 @@ type (
 	IConverterHandler interface {
 		Greeting(c *fiber.Ctx) error
 		Convert(c *fiber.Ctx) error
+		SearchDestination(c *fiber.Ctx) error
 	}
 	converterHandler struct {
 		converterUsecase converterUsecases.IConverterUsecases
@@ -35,7 +36,6 @@ func (h *converterHandler) Convert(c *fiber.Ctx) error {
 	wrapper := request.ContextWrapper(c)
 
 	req := new(converter.ConverterReq)
-
 	if err := wrapper.Bind(req); err != nil {
 		return response.Error(c, http.StatusBadRequest, err.Error())
 	}
@@ -46,4 +46,19 @@ func (h *converterHandler) Convert(c *fiber.Ctx) error {
 	}
 
 	return response.Success(c, http.StatusOK, res)
+}
+
+func (h *converterHandler) SearchDestination(c *fiber.Ctx) error {
+	ctx := context.Background()
+
+	shortId := c.Params("short_id")
+
+	des, err := h.converterUsecase.SearchDestination(ctx, &converter.SearchShortIdReq{
+		ShortId: shortId,
+	})
+	if err != nil {
+		return response.Error(c, http.StatusBadRequest, err.Error())
+	}
+
+	return response.Redirect(c, des)
 }

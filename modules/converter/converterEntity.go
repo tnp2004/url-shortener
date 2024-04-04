@@ -8,9 +8,9 @@ import (
 
 type (
 	Url struct {
-		Id        primitive.ObjectID `bson:"_id,omitempty"`
-		ShortId   string             `bson:"short_id"`
-		Endpoint  string             `bson:"endpoint"`
-		CreatedAt time.Time          `bson:"created_at"`
+		Id          primitive.ObjectID `bson:"_id,omitempty"`
+		ShortId     string             `bson:"short_id"`
+		Destination string             `bson:"destination"`
+		CreatedAt   time.Time          `bson:"created_at"`
 	}
 )

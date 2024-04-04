@@ -20,7 +20,7 @@ func Error(c *fiber.Ctx, status int16, message string) error {
 	})
 }
 
-func Redirect(c *fiber.Ctx, url string, status int) error {
+func Redirect(c *fiber.Ctx, url string) error {
 	if err := c.Redirect(url, http.StatusMovedPermanently); err != nil {
 		return Error(c, http.StatusInternalServerError, err.Error())
 	}

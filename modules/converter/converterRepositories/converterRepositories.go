@@ -15,7 +15,7 @@ import (
 type (
 	IConverterRepository interface {
 		InsertUrl(pctx context.Context, req *converter.Url) (primitive.ObjectID, error)
-		SearchShortIdByObjectId(pctx context.Context, id primitive.ObjectID) (string, error)
+		FindOneDestinationByShortId(pctx context.Context, id string) (string, error)
 	}
 
 	converterRepository struct {
@@ -43,7 +43,7 @@ func (r *converterRepository) InsertUrl(pctx context.Context, req *converter.Url
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func (r *converterRepository) SearchShortIdByObjectId(pctx context.Context, id primitive.ObjectID) (string, error) {
+func (r *converterRepository) FindOneDestinationByShortId(pctx context.Context, id string) (string, error) {
 	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
 	defer cancel()
 
@@ -52,10 +52,10 @@ func (r *converterRepository) SearchShortIdByObjectId(pctx context.Context, id p
 
 	result := new(converter.Url)
 
-	if err := col.FindOne(ctx, bson.M{"_id": id}).Decode(result); err != nil {
-		log.Printf("Error: SearchShortIdByObjectId failed: %s", err.Error())
+	if err := col.FindOne(ctx, bson.M{"short_id": id}).Decode(result); err != nil {
+		log.Printf("Error: FindOneDestinationByShortId failed: %s", err.Error())
 		return "", errors.New("error: search short id failed")
 	}
 
-	return result.ShortId, nil
+	return result.Destination, nil
 }

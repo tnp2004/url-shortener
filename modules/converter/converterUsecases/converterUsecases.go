@@ -16,6 +16,7 @@ import (
 type (
 	IConverterUsecases interface {
 		GetShortUrl(pctx context.Context, req *converter.ConverterReq) (*converter.ConverterRes, error)
+		SearchDestination(pctx context.Context, req *converter.SearchShortIdReq) (string, error)
 	}
 	converterUsecases struct {
 		converterRepository converterRepositories.IConverterRepository
@@ -34,9 +35,9 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 	shortId := utils.GenerateShortId(6)
 
 	insertRequest := &converter.Url{
-		ShortId:   shortId,
-		Endpoint:  req.URL,
-		CreatedAt: time.Now(),
+		ShortId:     shortId,
+		Destination: req.URL,
+		CreatedAt:   time.Now(),
 	}
 
 	_, err := u.converterRepository.InsertUrl(pctx, insertRequest)
@@ -48,4 +49,14 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 	return &converter.ConverterRes{
 		ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, shortId),
 	}, nil
+}
+
+func (u *converterUsecases) SearchDestination(pctx context.Context, req *converter.SearchShortIdReq) (string, error) {
+	des, err := u.converterRepository.FindOneDestinationByShortId(pctx, req.ShortId)
+
+	if err != nil {
+		return "", errors.New("error: search destination failed")
+	}
+
+	return des, nil
 }
