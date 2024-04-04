@@ -15,6 +15,7 @@ import (
 type (
 	IConverterRepository interface {
 		InsertUrl(pctx context.Context, req *converter.Url) (primitive.ObjectID, error)
+		FindOneDestination(pctx context.Context, url string) (string, error)
 		FindOneDestinationByShortId(pctx context.Context, id string) (string, error)
 	}
 
@@ -58,4 +59,21 @@ func (r *converterRepository) FindOneDestinationByShortId(pctx context.Context, 
 	}
 
 	return result.Destination, nil
+}
+
+func (r *converterRepository) FindOneDestination(pctx context.Context, url string) (string, error) {
+	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
+	defer cancel()
+
+	db := r.db.Database("converter_db")
+	col := db.Collection("url")
+
+	result := new(converter.Url)
+
+	if err := col.FindOne(ctx, bson.M{"destination": url}).Decode(result); err != nil {
+		log.Printf("Error: FindOneDestinationByShortId failed: %s", err.Error())
+		return "", errors.New("error: search short id failed")
+	}
+
+	return result.ShortId, nil
 }

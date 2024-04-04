@@ -42,7 +42,7 @@ func (h *converterHandler) Convert(c *fiber.Ctx) error {
 
 	res, err := h.converterUsecase.GetShortUrl(ctx, req)
 	if err != nil {
-		return response.Error(c, http.StatusInternalServerError, err.Error())
+		return response.Error(c, http.StatusBadRequest, err.Error())
 	}
 
 	return response.Success(c, http.StatusOK, res)

@@ -32,6 +32,15 @@ func NewConverterUsecases(repository converterRepositories.IConverterRepository,
 }
 
 func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.ConverterReq) (*converter.ConverterRes, error) {
+	// Check if the destination URL already exists
+	existShortId, _ := u.converterRepository.FindOneDestination(pctx, req.URL)
+	if existShortId != "" {
+		return &converter.ConverterRes{
+			ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, existShortId),
+		}, nil
+	}
+
+	// Insert Short id
 	shortId := utils.GenerateShortId(6)
 
 	insertRequest := &converter.Url{
