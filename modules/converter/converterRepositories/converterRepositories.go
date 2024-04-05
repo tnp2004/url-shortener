@@ -15,8 +15,9 @@ import (
 type (
 	IConverterRepository interface {
 		InsertUrl(pctx context.Context, req *converter.Url) (primitive.ObjectID, error)
-		FindOneDestination(pctx context.Context, url string) (string, error)
+		FindOneDestination(pctx context.Context, url string) (*converter.Url, error)
 		FindOneDestinationByShortId(pctx context.Context, id string) (string, error)
+		UpdateOneExpiration(pctx context.Context, id primitive.ObjectID, expiration time.Time) error
 	}
 
 	converterRepository struct {
@@ -61,7 +62,7 @@ func (r *converterRepository) FindOneDestinationByShortId(pctx context.Context, 
 	return result.Destination, nil
 }
 
-func (r *converterRepository) FindOneDestination(pctx context.Context, url string) (string, error) {
+func (r *converterRepository) FindOneDestination(pctx context.Context, url string) (*converter.Url, error) {
 	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
 	defer cancel()
 
@@ -71,9 +72,24 @@ func (r *converterRepository) FindOneDestination(pctx context.Context, url strin
 	result := new(converter.Url)
 
 	if err := col.FindOne(ctx, bson.M{"destination": url}).Decode(result); err != nil {
-		log.Printf("Error: FindOneDestinationByShortId failed: %s", err.Error())
-		return "", errors.New("error: search short id failed")
+		log.Printf("Error: FindOneDestination failed: %s", err.Error())
+		return nil, errors.New("error: search destination failed")
 	}
 
-	return result.ShortId, nil
+	return result, nil
+}
+
+func (r *converterRepository) UpdateOneExpiration(pctx context.Context, id primitive.ObjectID, expiration time.Time) error {
+	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
+	defer cancel()
+
+	db := r.db.Database("converter_db")
+	col := db.Collection("url")
+
+	if _, err := col.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"expires_at": expiration}}); err != nil {
+		log.Printf("Error: UpdateOneExpiration failed: %s", err.Error())
+		return errors.New("error: update expiration failed")
+	}
+
+	return nil
 }

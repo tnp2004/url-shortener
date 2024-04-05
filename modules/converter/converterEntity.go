@@ -12,5 +12,6 @@ type (
 		ShortId     string             `bson:"short_id"`
 		Destination string             `bson:"destination"`
 		CreatedAt   time.Time          `bson:"created_at"`
+		ExpiresAt   time.Time          `bson:"expires_at"`
 	}
 )

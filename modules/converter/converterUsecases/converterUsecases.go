@@ -33,10 +33,15 @@ func NewConverterUsecases(repository converterRepositories.IConverterRepository,
 
 func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.ConverterReq) (*converter.ConverterRes, error) {
 	// Check if the destination URL already exists
-	existShortId, _ := u.converterRepository.FindOneDestination(pctx, req.URL)
-	if existShortId != "" {
+	existDoc, _ := u.converterRepository.FindOneDestination(pctx, req.URL)
+	if existDoc != nil {
+		// Update expiration time  when destination is already exist
+		if err := u.converterRepository.UpdateOneExpiration(pctx, existDoc.Id, time.Now().Add(86400*time.Second)); err != nil {
+			return nil, err
+		}
+
 		return &converter.ConverterRes{
-			ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, existShortId),
+			ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, existDoc.ShortId),
 		}, nil
 	}
 
@@ -47,6 +52,7 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 		ShortId:     shortId,
 		Destination: req.URL,
 		CreatedAt:   time.Now(),
+		ExpiresAt:   time.Now().Add(86400 * time.Second),
 	}
 
 	_, err := u.converterRepository.InsertUrl(pctx, insertRequest)
@@ -62,7 +68,6 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 
 func (u *converterUsecases) SearchDestination(pctx context.Context, req *converter.SearchShortIdReq) (string, error) {
 	des, err := u.converterRepository.FindOneDestinationByShortId(pctx, req.ShortId)
-
 	if err != nil {
 		return "", errors.New("error: search destination failed")
 	}
