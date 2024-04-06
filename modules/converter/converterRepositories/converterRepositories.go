@@ -56,7 +56,7 @@ func (r *converterRepository) FindOneDestinationByShortId(pctx context.Context, 
 
 	if err := col.FindOne(ctx, bson.M{"short_id": id}).Decode(result); err != nil {
 		log.Printf("Error: FindOneDestinationByShortId failed: %s", err.Error())
-		return "", errors.New("error: search short id failed")
+		return "", errors.New("error: short id not found")
 	}
 
 	return result.Destination, nil
@@ -73,7 +73,7 @@ func (r *converterRepository) FindOneDestination(pctx context.Context, url strin
 
 	if err := col.FindOne(ctx, bson.M{"destination": url}).Decode(result); err != nil {
 		log.Printf("Error: FindOneDestination failed: %s", err.Error())
-		return nil, errors.New("error: search destination failed")
+		return nil, errors.New("error: search destination not found")
 	}
 
 	return result, nil
