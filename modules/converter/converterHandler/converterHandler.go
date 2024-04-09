@@ -13,7 +13,7 @@ import (
 
 type (
 	IConverterHandler interface {
-		Greeting(c *fiber.Ctx) error
+		HealthCheck(c *fiber.Ctx) error
 		Convert(c *fiber.Ctx) error
 		SearchDestination(c *fiber.Ctx) error
 	}
@@ -26,8 +26,8 @@ func NewConverterHandler(usecase converterUsecases.IConverterUsecases) IConverte
 	return &converterHandler{converterUsecase: usecase}
 }
 
-func (h *converterHandler) Greeting(c *fiber.Ctx) error {
-	return c.SendString("Hi guys this is url shortener!")
+func (h *converterHandler) HealthCheck(c *fiber.Ctx) error {
+	return response.Success(c, http.StatusOK, "OK")
 }
 
 func (h *converterHandler) Convert(c *fiber.Ctx) error {

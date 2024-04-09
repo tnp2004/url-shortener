@@ -32,7 +32,7 @@ func (m *moduleFactory) ConverterModule() {
 
 	router := m.router
 
-	router.Get("/", handler.Greeting)
+	router.Get("/healthcheck", handler.HealthCheck)
 	router.Get("/:short_id", handler.SearchDestination)
 
 	router.Post("/convert", handler.Convert)
