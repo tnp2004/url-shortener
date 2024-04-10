@@ -41,7 +41,7 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 		}
 
 		return &converter.ConverterRes{
-			ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Port, u.cfg.Version, existDoc.ShortId),
+			ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, existDoc.ShortId),
 		}, nil
 	}
 
@@ -62,7 +62,7 @@ func (u *converterUsecases) GetShortUrl(pctx context.Context, req *converter.Con
 	}
 
 	return &converter.ConverterRes{
-		ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Port, u.cfg.Version, shortId),
+		ShortenedURL: fmt.Sprintf("%s/%s/%s", u.cfg.Url, u.cfg.Version, shortId),
 	}, nil
 }
 

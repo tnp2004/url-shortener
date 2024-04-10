@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"log"
+	"os"
 
 	"github.com/tnp2004/url-shortener/config"
 	"github.com/tnp2004/url-shortener/pkg/database"
@@ -9,7 +11,15 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	cfg := config.LoadConfig(func() string {
+		if len(os.Args) < 2 {
+			log.Fatal("Error: .env path is required")
+		} else if len(os.Args) > 2 {
+			log.Fatal("Error: too many arguments")
+		}
+
+		return os.Args[1]
+	}())
 
 	ctx := context.Background()
 
