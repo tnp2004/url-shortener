@@ -1,10 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type (
@@ -16,7 +13,7 @@ type (
 	App struct {
 		Stage   string
 		Name    string
-		Url     string
+		Port    string
 		Version string
 	}
 
@@ -25,16 +22,12 @@ type (
 	}
 )
 
-func LoadConfig(path string) Config {
-	if err := godotenv.Load(path); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
+func LoadConfig() Config {
 	return Config{
 		App: App{
 			Stage:   os.Getenv("APP_STAGE"),
 			Name:    os.Getenv("APP_NAME"),
-			Url:     os.Getenv("APP_URL"),
+			Port:    "0.0.0.0:" + os.Getenv("PORT"),
 			Version: os.Getenv("VERSION"),
 		},
 		Db: Db{

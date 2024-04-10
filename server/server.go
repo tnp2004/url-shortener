@@ -44,7 +44,7 @@ func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 }
 
 func (s *server) httpListening() {
-	if err := s.app.Listen(s.cfg.App.Url); err != nil {
+	if err := s.app.Listen(s.cfg.App.Port); err != nil {
 		log.Fatal("Error: ", err.Error())
 	}
 }
